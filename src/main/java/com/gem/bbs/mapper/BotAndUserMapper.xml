@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gem.bbs.mapper.BotAndUserMapper">
+    <select id="selectByCreaterId" resultType="com.gem.bbs.entity.BotAndUser">
+        SELECT * FROM botanduser
+        WHERE creater_id = #{createrId}
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countByCreaterId" resultType="int">
+        SELECT COUNT(*) FROM botanduser
+        WHERE creater_id = #{createrId}
+    </select>
+
+    <!-- ********************************************************** -->
+    <insert id="insertBotAndUser">
+        INSERT INTO bbs.botanduser (bot_id, creater_id, created_time, updated_time,name)
+        VALUES (#{botId}, #{createrId}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,#{name})
+    </insert>
+    <delete id="deleteBotData">
+        DELETE FROM bbs.botanduser WHERE bot_id = #{botId};
+    </delete>
+</mapper>

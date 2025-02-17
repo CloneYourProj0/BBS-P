@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gem.bbs.mapper.QaUserInteractionsMapper">
+
+    <!-- 插入新的交互记录 -->
+    <insert id="insertInteraction" parameterType="com.gem.bbs.entity.qaUserInteraction" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO qa_user_interactions (user_id, question_id, interaction_type, create_date)
+        VALUES (#{userId}, #{questionId}, #{interactionType}, #{createDate})
+    </insert>
+    <delete id="deleUserAct" parameterType="com.gem.bbs.entity.qaUserInteraction">
+        DELETE FROM qa_user_interactions
+        WHERE
+        <choose>
+            <when test="id != null">
+                id = #{id}
+            </when>
+            <otherwise>
+                user_id = #{userId}
+                AND question_id = #{questionId}
+                AND interaction_type=#{interactionType}
+            </otherwise>
+        </choose>
+    </delete>
+
+    <!-- 根据用户 ID 获取交互记录 -->
+    <select id="getInteractionsByUserId" resultType="qaUserInteraction">
+        SELECT id, user_id, question_id, interaction_type, create_date
+        FROM qa_user_interactions
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 获取所有交互记录 -->
+    <select id="getAllInteractions" resultType="qaUserInteraction">
+        SELECT id, user_id, question_id, interaction_type, create_date
+        FROM qa_user_interactions
+    </select>
+
+    <!-- 根据条件查询交互记录 -->
+    <select id="getInteractionsByCondition" resultType="qaUserInteraction">
+        SELECT id, user_id, question_id, interaction_type, create_date
+        FROM qa_user_interactions
+        WHERE 1=1
+        <if test="interactionType != null and interactionType != ''" >
+            AND interaction_type = #{interactionType}
+        </if>
+        <if test="userId != null and userId !=''">
+            AND user_id = #{userId}
+        </if>
+        <if test="questionId !=null and questionId != ''">
+            AND question_id = #{questionId}
+        </if>
+    </select>
+    <select id="selectInteractions" resultType="com.gem.bbs.entity.qaUserInteraction">
+        SELECT * FROM qa_user_interactions
+        <where>
+            <if test="interactionType != null and interactionType != ''">
+                AND interaction_type = #{interactionType}
+            </if>
+            <if test="startDate != null">
+                AND create_date >= #{startDate}
+            </if>
+            <if test="endDate != null ">
+                AND create_date &lt;= #{endDate}
+            </if>
+        </where>
+        ORDER BY create_date DESC
+        LIMIT #{limit} OFFSET #{page}
+    </select>
+    <select id="countInteractions" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM qa_user_interactions
+        <where>
+            <if test="interactionType != null and interactionType != ''">
+                AND interaction_type = #{interactionType}
+            </if>
+            <if test="startDate != null ">
+                AND create_date >= #{startDate}
+            </if>
+            <if test="endDate != null ">
+                AND create_date &lt;= #{endDate}
+            </if>
+        </where>
+    </select>
+
+</mapper>

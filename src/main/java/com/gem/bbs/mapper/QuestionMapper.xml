@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace命名空间，作用就是对sql进行分类化管理，理解sql隔离 
+注意：使用mapper代理方法开发，namespace有特殊重要的作用
+-->
+<mapper namespace="com.gem.bbs.mapper.QuestionMapper">
+    <sql id="query_question_clause">
+        <if test="title != null and title != ''">
+            and title like concat('%',#{title},'%')
+        </if>
+    </sql>
+
+    <!-- 保存问题 -->
+    <insert id="insertQuestion" parameterType="Question" useGeneratedKeys="true" keyProperty="id">
+        insert into question (title,description,coin,user_id,createtime)
+          values (#{title},#{description},#{coin},#{userId},#{createtime})
+    </insert>
+
+    <update id="updataTopStatus">
+        UPDATE question
+        SET is_up = #{status}
+        WHERE id = #{id};
+    </update>
+
+    <!--查询集合-->
+    <select id="selectAll" resultType="Question">
+        select * from question
+        <where>
+            <include refid="query_question_clause"></include>
+        </where>
+        ORDER BY is_up DESC, createtime DESC
+        limit #{beginPage},#{pageCount}
+    </select>
+
+    <!-- 查询记录总数 -->
+    <select id="getTotal" parameterType="string" resultType="java.lang.Integer">
+        select count(1) from question
+        <where>
+            <include refid="query_question_clause"></include>
+        </where>
+    </select>
+
+    <!-- 根据主键查询 -->
+    <select id="selectOneByPrimaryKey" parameterType="java.lang.Integer" resultType="Question">
+        select * from question where id = #{value}
+    </select>
+
+    <!--查找用户的帖子 -->
+   <select id="FindQuestionByUserId" resultType="com.gem.bbs.entity.Question">
+       select * from question where user_id=#{id}
+   </select>
+    <select id="FindAnswerByUserId" resultType="com.gem.bbs.entity.Answer">
+        select * from answer where user_id=#{id}
+    </select>
+
+    <!-- 根据用户ID获取问题 -->
+    <select id="getQuestionsByUserId" parameterType="int" resultType="question">
+        SELECT * FROM bbs.question WHERE user_id = #{userId}
+    </select>
+
+    <!-- 根据问题ID获取问题 -->
+    <select id="getQuestionById" parameterType="int" resultType="question">
+        SELECT * FROM bbs.question WHERE id = #{id}
+    </select>
+    <select id="findQuestionsByUserId" parameterType="map" resultType="question">
+        SELECT * FROM question
+        WHERE user_id = #{userId}
+        ORDER BY createtime DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countQuestionsByUserId" parameterType="int" resultType="int">
+        SELECT COUNT(*) FROM question
+        WHERE user_id = #{userId}
+    </select>
+    <!-- 新增的回答查询语句 -->
+    <select id="findAnswersByUserId" parameterType="map" resultType="answer">
+        SELECT * FROM answer
+        WHERE user_id = #{userId}
+        ORDER BY createtime DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countAnswersByUserId" parameterType="int" resultType="int">
+        SELECT COUNT(*) FROM answer
+        WHERE user_id = #{userId}
+    </select>
+
+    <select id="countQuestions" resultType="Question">
+        SELECT *
+        FROM bbs.question
+        ORDER BY
+            CASE
+                WHEN createtime >= (SELECT DATE_SUB(MAX(createtime), INTERVAL 7 DAY) FROM bbs.question) THEN 0
+                ELSE 1
+                END,
+            view_count DESC
+        LIMIT 5
+    </select>
+
+    <select id="matchQuestion" resultType="com.gem.bbs.entity.Question">
+    select * from bbs.question
+        <where>
+            <if test="content != null and content != ''">
+                (
+                description LIKE CONCAT('%', #{content}, '%')
+                OR title LIKE CONCAT('%', #{content}, '%')
+                )
+            </if>
+        </where>
+    </select>
+
+    <!-- 更新问题 -->
+    <update id="updateQuestion" parameterType="question">
+        UPDATE bbs.question
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="coin != null">coin = #{coin},</if>
+            <if test="isUp != null">is_up = #{isUp},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除问题 -->
+    <delete id="deleteQuestion" parameterType="int">
+        DELETE FROM bbs.question WHERE id = #{id}
+    </delete>
+
+</mapper>
+
+

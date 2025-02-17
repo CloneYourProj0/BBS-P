@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gem.bbs.mapper.MessageMapper">
+
+    <!-- 基础列 -->
+    <sql id="Base_Column_List">
+        id, from_user_id, to_user_id, content, create_time, status, message_type, resourse_id
+    </sql>
+
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="com.gem.bbs.entity.Message">
+        <id column="id" property="id"/>
+        <result column="from_user_id" property="fromUserId"/>
+        <result column="to_user_id" property="toUserId"/>
+        <result column="content" property="content"/>
+        <result column="create_time" property="createTime"/>
+        <result column="status" property="status"/>
+        <result column="message_type" property="messageType"/>
+        <result column="resourse_id" property="resourseId"/>
+        <result column="resource_answer_id" property="resourceAnswerId"/>
+    </resultMap>
+
+    <!-- 插入新消息 -->
+    <insert id="insert" parameterType="Message" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO message (from_user_id,
+                             to_user_id,
+                             content,
+                             create_time,
+                             status,
+                             message_type,
+                             resourse_id,
+                             resource_answer_id,
+                             is_read)
+        VALUES (#{fromUserId},
+                #{toUserId},
+                #{content},
+                #{createTime},
+                #{status},
+                #{messageType},
+                #{resourseId},
+                #{resourceAnswerId},
+                #{isRead})
+    </insert>
+
+    <!-- 批量插入消息 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO message (
+        from_user_id,
+        to_user_id,
+        content,
+        create_time,
+        status,
+        message_type,
+        resourse_id,
+        resource_answer_id
+        ) VALUES
+        <foreach collection="messages" item="item" separator=",">
+            (
+            #{item.fromUserId},
+            #{item.toUserId},
+            #{item.content},
+            #{item.createTime},
+            #{item.status},
+            #{item.messageType},
+            #{item.resourseId},
+            #{item.resourceAnswerId}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 更新消息状态 -->
+    <update id="updateMessageStatus">
+        UPDATE message
+        SET status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 批量更新消息状态 -->
+    <update id="batchUpdateStatus">
+        UPDATE message
+        SET status = #{status}
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <!-- 获取未读消息列表 -->
+    <select id="selectUnreadMessages" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM message
+        WHERE to_user_id = #{userId}
+        AND status != 2
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 获取离线消息列表 -->
+    <select id="selectOfflineMessages" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM message
+        WHERE to_user_id = #{userId}
+        AND status = 0
+        ORDER BY create_time ASC
+    </select>
+
+    <!-- 获取消息详情 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM message
+        WHERE id = #{id}
+    </select>
+
+    <!-- 获取消息对话列表 -->
+    <select id="selectConversation" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM message
+        WHERE (
+        (from_user_id = #{userId1} AND to_user_id = #{userId2})
+        OR
+        (from_user_id = #{userId2} AND to_user_id = #{userId1})
+        )
+        ORDER BY create_time DESC
+        <if test="limit != null">
+            LIMIT #{limit}
+        </if>
+    </select>
+
+    <!-- 获取未读消息数量 -->
+    <select id="countUnreadMessages" resultType="int">
+        SELECT COUNT(*)
+        FROM message
+        WHERE to_user_id = #{userId}
+          AND status != 2
+    </select>
+
+    <!-- 删除消息 -->
+    <delete id="deleteById">
+        DELETE FROM message
+        WHERE id = #{id}
+    </delete>
+
+    <!-- 获取用户的所有消息 -->
+    <select id="selectUserMessages" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM message
+        WHERE (from_user_id = #{userId} OR to_user_id = #{userId})
+        <if test="startTime != null">
+            AND create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND create_time &lt;= #{endTime}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+
+    <resultMap id="MessageMap" type="Message">
+        <id property="id" column="id"/>
+        <result property="fromUserId" column="from_user_id"/>
+        <result property="fromUserName" column="from_user_name"/>
+        <result property="toUserId" column="to_user_id"/>
+        <result property="content" column="content"/>
+        <result property="createTime" column="create_time"/>
+        <result property="status" column="status"/>
+        <result property="messageType" column="message_type"/>
+        <result property="resourseId" column="resourse_id"/>
+        <result property="resourceAnswerId" column="resource_answer_id"/>
+        <result property="isRead" column="is_read"/>
+    </resultMap>
+
+<!--    <select id="findByToUserId" resultMap="MessageMap">-->
+<!--        SELECT-->
+<!--            m.id,-->
+<!--            m.from_user_id,-->
+<!--            u.loginname AS from_user_name,-->
+<!--            m.to_user_id,-->
+<!--            m.content,-->
+<!--            m.create_time,-->
+<!--            m.status,-->
+<!--            m.resource_answer_id,-->
+<!--            m.resourse_id-->
+<!--        FROM-->
+<!--            message m-->
+<!--                LEFT JOIN user u ON m.from_user_id = u.id-->
+<!--        WHERE-->
+<!--            m.to_user_id = #{toUserId}-->
+<!--        ORDER BY-->
+<!--            m.create_time DESC-->
+<!--    </select>-->
+
+
+
+    <!-- 获取总记录数 -->
+    <select id="countByToUserId" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM
+            message m
+                LEFT JOIN user u ON m.from_user_id = u.id
+        WHERE
+            m.to_user_id = #{toUserId}
+    </select>
+
+    <!-- 分页查询 -->
+    <select id="findByToUserIdLimit" resultMap="MessageMap">
+        SELECT
+            m.id,
+            m.from_user_id,
+            u.loginname AS from_user_name,
+            m.to_user_id,
+            m.content,
+            m.create_time,
+            m.status,
+            m.resource_answer_id,
+            m.resourse_id,
+            m.is_read
+        FROM
+            message m
+                LEFT JOIN user u ON m.from_user_id = u.id
+        WHERE
+            m.to_user_id = #{toUserId}
+        ORDER BY
+            m.create_time DESC,m.status Asc
+        LIMIT #{startIndex}, #{pageSize}
+    </select>
+
+    <update id="updateStatus">
+        UPDATE message
+        SET is_read = 1
+        WHERE id = #{messageId}
+    </update>
+</mapper>

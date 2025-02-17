@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <File name="A1" fileName="A1.log" append="false">
+            <PatternLayout pattern="%t %-5p %c{2} - %m%n"/>
+        </File>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout charset="GBK" pattern="%highlight(%-5level) %d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
+            <PatternSelector defaultPattern="%d %t %-5p %c{2} - %m%n">
+                <!-- 设置不同日志级别的颜色 -->
+                <PatternMatch key="DEBUG" pattern="%style{%-5level}{blue} %d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
+                <PatternMatch key="INFO" pattern="%style{%-5level}{green} %d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
+                <PatternMatch key="WARN" pattern="%style{%-5level}{yellow} %d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
+                <PatternMatch key="ERROR" pattern="%style{%-5level}{red} %d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
+            </PatternSelector>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="org.apache.log4j.xml" level="debug">
+            <AppenderRef ref="A1"/>
+        </Logger>
+        <logger name="org.mybatis" level="DEBUG"/>
+        <logger name="java.sql.Connection" level="DEBUG"/>
+        <Root level="debug">
+            <AppenderRef ref="STDOUT"/>
+        </Root>
+    </Loggers>
+</Configuration>

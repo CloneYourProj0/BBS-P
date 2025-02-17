@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <!-- 开启驼峰命名自动映射 -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="logImpl" value="SLF4J"/> <!-- 指定日志实现为SLF4J -->    </settings>
+
+    <!--配置别名（entity，pojo）-->
+    <typeAliases>
+        <!--批量设置别名
+            别名：即类的全名称（首字母可大写可小写）
+        -->
+        <package name="com.gem.bbs.entity"></package>
+    </typeAliases>
+
+
+</configuration>
