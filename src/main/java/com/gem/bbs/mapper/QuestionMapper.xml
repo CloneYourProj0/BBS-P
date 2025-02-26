@@ -55,8 +55,15 @@
     </select>
 
     <!-- 根据用户ID获取问题 -->
-    <select id="getQuestionsByUserId" parameterType="int" resultType="question">
-        SELECT * FROM bbs.question WHERE user_id = #{userId}
+    <select id="getQuestionsByUserId" parameterType="map" resultType="question">
+        SELECT * FROM bbs.question
+        <where>
+            <if test="userId != null">
+                user_id = #{userId}
+            </if>
+        </where>
+        ORDER BY created_at DESC
+        LIMIT #{offset}, #{pageSize}
     </select>
 
     <!-- 根据问题ID获取问题 -->
@@ -111,6 +118,15 @@
         </where>
     </select>
 
+    <select id="getQuestionCountByUserId" parameterType="Integer" resultType="int">
+        SELECT COUNT(*) FROM bbs.question
+        <where>
+            <if test="userId != null">
+                user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
     <!-- 更新问题 -->
     <update id="updateQuestion" parameterType="question">
         UPDATE bbs.question
@@ -127,6 +143,50 @@
     <delete id="deleteQuestion" parameterType="int">
         DELETE FROM bbs.question WHERE id = #{id}
     </delete>
+
+
+
+    <!-- ************************************************************* -->
+
+    <!-- 查询问题数据，支持动态条件 -->
+    <select id="queryQuestions" resultType="com.gem.bbs.entity.Question">
+        SELECT id, title, description, coin, user_id, createtime, is_up, ai_response_requested, view_count
+        FROM question
+        <where>
+            <if test="query.userId != null">
+                AND user_id = #{query.userId}
+            </if>
+            <if test="query.startTime != null">
+                AND createtime &gt;= #{query.startTime}
+            </if>
+            <if test="query.endTime != null">
+                AND createtime &lt;= #{query.endTime}
+            </if>
+        </where>
+        ORDER BY createtime DESC
+        <if test="query.limit != null">
+            LIMIT #{query.limit} OFFSET #{query.offset}
+        </if>
+    </select>
+
+    <!-- 统计总记录数 -->
+    <select id="countQuestionsbyadmin" parameterType="com.gem.bbs.entity.QuestionQuery" resultType="int">
+        SELECT COUNT(*) FROM question
+        <where>
+            <if test="query.userId != null">
+                AND user_id = #{query.userId}
+            </if>
+            <if test="query.startTime != null">
+                AND createtime &gt;= #{query.startTime}
+            </if>
+            <if test="query.endTime != null">
+                AND createtime &lt;= #{query.endTime}
+            </if>
+        </where>
+    </select>
+
+
+
 
 </mapper>
 

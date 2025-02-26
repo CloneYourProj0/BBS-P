@@ -1,6 +1,7 @@
 package com.gem.bbs.service.impl;
 
 import com.gem.bbs.common.UserConnectionManager;
+import com.gem.bbs.entity.PageResult;
 import com.gem.bbs.entity.User;
 import com.gem.bbs.mapper.UserMapper;
 import com.gem.bbs.service.UserService;
@@ -84,4 +85,38 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Integer id) {
         userMapper.deleteUser(id);
     }
+
+    @Override
+    public PageResult<User> getUsersByPage(int page, int pageSize) {
+        // 计算偏移量
+        int offset = (page - 1) * pageSize;
+
+        // 获取总记录数
+        int total = userMapper.countUsers();
+
+        // 获取当前页数据
+        List<User> users = userMapper.getUsersByPage(offset, pageSize);
+
+        // 计算总页数
+        int totalPages = (total + pageSize - 1) / pageSize;
+
+        return new PageResult<>(users, page, pageSize, total, totalPages);
+    }
+
+    public PageResult<User> searchUsersByKeyword(int page, int pageSize, String keyword) {
+        // 计算偏移量
+        int offset = (page - 1) * pageSize;
+
+        // 获取模糊查询总记录数
+        int total = userMapper.countUsersByKeyword(keyword);
+
+        // 获取当前页数据（模糊查询）
+        List<User> users = userMapper.getUsersByKeyword(keyword, offset, pageSize);
+
+        // 计算总页数
+        int totalPages = (total + pageSize - 1) / pageSize;
+
+        return new PageResult<>(users, page, pageSize, total, totalPages);
+    }
+
 }

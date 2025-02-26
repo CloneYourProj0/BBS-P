@@ -1,5 +1,6 @@
 package com.gem.bbs.service;
 
+import com.gem.bbs.entity.PageResult;
 import com.gem.bbs.entity.User;
 
 import javax.servlet.http.HttpSession;
@@ -40,5 +41,9 @@ public interface UserService {
     User getUserById(Integer id);
     void updateUser(User user);
     void deleteUser(Integer id);
+
+    PageResult<User> getUsersByPage(int page, int pageSize);
+
+    PageResult<User> searchUsersByKeyword(int page, int limit, String keyword);
     // 其他方法...
 }

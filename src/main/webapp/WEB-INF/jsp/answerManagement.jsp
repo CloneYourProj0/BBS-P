@@ -1,3 +1,10 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: chen
+  Date: 2025/2/24
+  Time: 3:44
+  To change this template use File | Settings | File Templates.
+--%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
@@ -187,7 +194,7 @@
     <div class="admin-sidebar">
         <div class="logo">管理系统</div>
         <ul class="layui-nav layui-nav-tree">
-            <li class="layui-nav-item layui-this">
+            <li class="layui-nav-item">
                 <a href="<%= request.getContextPath() %>/admin/dashboard">
                     <i class="layui-icon layui-icon-user"></i> 用户管理
                 </a>
@@ -197,7 +204,7 @@
                     <i class="layui-icon layui-icon-list"></i> 帖子管理
                 </a>
             </li>
-            <li class="layui-nav-item">
+            <li class="layui-nav-item layui-this">
                 <a href="<%= request.getContextPath() %>/admin/viewAnswers">
                     <i class="layui-icon layui-icon-dialogue"></i> 回复管理
                 </a>
@@ -209,110 +216,124 @@
     <div class="admin-main">
         <!-- 页面标题 -->
         <div class="admin-header">
-            <h2>用户管理</h2>
+            <h2>回复管理</h2>
             <h4><a href="<%= request.getContextPath() %>/index" class="return-btn">返回</a></h4>
         </div>
-
-        <!-- 搜索框 -->
-        <div class="search-box">
-            <div class="layui-form">
+    <!-- 查询条件表单 -->
+    <form class="layui-form" id="answerQueryForm" style="margin-bottom: 20px;">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">用户ID</label>
                 <div class="layui-input-inline">
-                    <input type="text" id="searchUser" placeholder="请输入用户名/邮箱搜索" class="layui-input">
+                    <input type="text" name="userId" placeholder="请输入用户ID" class="layui-input">
                 </div>
-                <button class="layui-btn" id="searchBtn">
-                    <i class="layui-icon layui-icon-search"></i> 搜索
-                </button>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">问题ID</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="questionId" placeholder="请输入问题ID" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">开始时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="startTime" placeholder="yyyy-MM-dd HH:mm:ss" class="layui-input" id="startTimeAnswer">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">结束时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="endTime" placeholder="yyyy-MM-dd HH:mm:ss" class="layui-input" id="endTimeAnswer">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <button type="button" class="layui-btn" id="searchAnswerBtn">查询</button>
             </div>
         </div>
+    </form>
 
-        <!-- 用户列表 -->
-        <!-- 只需要一个表格容器 -->
-        <table id="userTable" ></table>
+    <!-- 数据表格 -->
+    <table id="answerTable" lay-filter="answerTable"></table>
+</div>
 
-        <!-- 操作列模板 -->
-        <script type="text/html" id="tableToolbar">
-            <a class="layui-btn layui-btn-sm" lay-event="edit">编辑</a>
-            <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
-            <a class="layui-btn layui-btn-primary layui-btn-sm" lay-event="view">查看帖子</a>
-        </script>
+<!-- 工具栏模板 -->
+<script type="text/html" id="answerToolbar">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
 
-        <script>
-            layui.use(['table'], function(){
-                var table = layui.table;
+<script>
+    layui.use(['table', 'laydate'], function(){
+        var table = layui.table,
+            laydate = layui.laydate;
 
-                //渲染表格
-                table.render({
-                    elem: '#userTable'
-                    ,url: '${pageContext.request.contextPath}/admin/users' //接口URL
-                    ,page: true //开启分页
-                    ,cellMinWidth: 80
-                    ,cols: [[ //表头设置
-                        {field: 'id', title: 'ID', width: 80}
-                        ,{field: 'loginname', title: '登录名',}
-                        ,{field: 'username', title: '用户名', }
-                        ,{field: 'nickname', title: '昵称', }
-                        ,{field: 'email', title: '邮箱', }
-                        ,{field: 'createtime', title: '创建时间',}
-                        ,{title: '操作', toolbar: '#tableToolbar', width: 220}
-                    ]]
-                    ,parseData: function(res){ //转换数据格式以匹配PageResult
-                        return {
-                            "code": 0
-                            ,"msg": ""
-                            ,"count": res.total
-                            ,"data": res.data
-                        };
-                    }
+        // 初始化日期组件
+        laydate.render({
+            elem: '#startTimeAnswer',
+            type: 'datetime'
+        });
+        laydate.render({
+            elem: '#endTimeAnswer',
+            type: 'datetime'
+        });
 
+        // 渲染回复数据表格
+        var tableIns = table.render({
+            elem: '#answerTable',
+            url: '${pageContext.request.contextPath}/admin/answers', // 后台数据接口地址
+            page: true,
+            cols: [[
+                {field: 'id', title: 'ID',width:10},
+                {field: 'content', title: '内容',width: 500},
+                {field: 'questionId', title: '问题ID',width:80 },
+                {field: 'userId', title: '用户ID',width: 90 },
+                {field: 'isAccept', title: '是否采纳',width: 90 },
+                {field: 'likes', title: '点赞数',width: 90 },
+                {field: 'createtime', title: '创建时间', width: 190},
+                {field: 'toanswerid', title: '回复ID', width: 90},
+                {title: '操作', toolbar: '#answerToolbar', width: 150}
+            ]],
+            parseData: function(res){
+                return {
+                    "code": 0,
+                    "msg": "",
+                    "count": res.total,
+                    "data": res.data
+                };
+            }
+        });
+
+        // 工具栏事件监听
+        table.on('tool(answerTable)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'edit'){
+                window.location.href = '${pageContext.request.contextPath}/admin/editAnswer?id=' + data.id;
+            } else if(obj.event === 'del'){
+                layer.confirm('确定删除该回复吗？', function(index){
+                    window.location.href = '${pageContext.request.contextPath}/admin/deleteAnswer?id=' + data.id;
+                    layer.close(index);
                 });
+            }
+        });
 
-
-                // 添加搜索按钮点击事件
-                document.getElementById('searchBtn').addEventListener('click', function() {
-                    var keyword = document.getElementById('searchUser').value;
-                    // 对关键词进行编码
-                    var encodedKeyword = encodeURIComponent(keyword);
-                    // 重新加载表格，传入搜索关键词
-                    table.reload('userTable', {
-                        url: '${pageContext.request.contextPath}/admin/users',
-                        where: {
-                            keyword: encodedKeyword
-                        },
-                        page: {
-                            curr: 1 // 重新从第一页开始
-                        }
-                    });
-                });
-
-                // 也可以添加回车键搜索功能
-                document.getElementById('searchUser').addEventListener('keypress', function(e) {
-                    if(e.keyCode === 13) { // 回车键
-                        document.getElementById('searchBtn').click();
-                    }
-                });
-
-
-                //监听工具条事件
-                table.on('tool(userTable)', function(obj){
-                    var data = obj.data;
-                    if(obj.event === 'edit'){
-                        window.location.href = '${pageContext.request.contextPath}/admin/editUser?id=' + data.id;
-                    } else if(obj.event === 'del'){
-                        layer.confirm('确认删除此用户?', function(index){
-                            window.location.href = '${pageContext.request.contextPath}/admin/deleteUser?id=' + data.id;
-                            layer.close(index);
-                        });
-                    } else if(obj.event === 'view'){
-                        window.location.href = '${pageContext.request.contextPath}/admin/viewUserPosts?id=' + data.id;
-                    }
-                });
+        // 查询按钮事件处理
+        document.getElementById('searchAnswerBtn').addEventListener('click', function(){
+            var userId = document.querySelector("input[name='userId']").value;
+            var questionId = document.querySelector("input[name='questionId']").value;
+            var startTime = document.querySelector("input[name='startTime']").value;
+            var endTime = document.querySelector("input[name='endTime']").value;
+            table.reload('answerTable', {
+                where: {
+                    userId: userId,
+                    questionId: questionId,
+                    startTime: startTime,
+                    endTime: endTime
+                },
+                page: { curr: 1 }
             });
-            </script>
-        </div>
+        });
+    });
+    </script>
     </div>
 </body>
 </html>
-
-
-
-

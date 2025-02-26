@@ -1,10 +1,7 @@
 package com.gem.bbs.service.impl;
 
 import com.gem.bbs.common.ApiService;
-import com.gem.bbs.entity.Answer;
-import com.gem.bbs.entity.Question;
-import com.gem.bbs.entity.User;
-import com.gem.bbs.entity.bot;
+import com.gem.bbs.entity.*;
 import com.gem.bbs.mapper.AnswerMapper;
 import com.gem.bbs.mapper.QuestionMapper;
 import com.gem.bbs.mapper.botMapper;
@@ -142,9 +139,9 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
 
-    public List<Question> getQuestionsByUserId(Integer userId) {
-        return questionMapper.getQuestionsByUserId(userId);
-    }
+//    public List<Question> getQuestionsByUserId(Integer userId) {
+//        return questionMapper.getQuestionsByUserId(userId);
+//    }
 
     public Question getQuestionById(Integer id) {
         return questionMapper.getQuestionById(id);
@@ -157,5 +154,20 @@ public class QuestionServiceImpl implements QuestionService {
     public void deleteQuestion(Integer id) {
         questionMapper.deleteQuestion(id);
     }
+
+
+    //*****************************************************************************
+
+    @Override
+    public List<Question> getQuestions(QuestionQuery query) {
+        return questionMapper.queryQuestions(query);
+    }
+
+    @Override
+    public int countQuestions(QuestionQuery query) {
+        return questionMapper.countQuestionsbyadmin(query);
+    }
+
+    //*****************************************************************************
 
 }

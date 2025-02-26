@@ -1,6 +1,7 @@
 package com.gem.bbs.mapper;
 
 import com.gem.bbs.entity.Answer;
+import com.gem.bbs.entity.AnswerQuery;
 import com.gem.bbs.entity.LikeAnswerIds;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
@@ -45,5 +46,13 @@ public interface AnswerMapper {
     void updateLikesById(@Param("id") int id, @Param("likes") int likes);
     @Select("SELECT * FROM answer WHERE id = #{id}")
     Answer selectByPrimaryKey(@Param("id") int id);
+
+
+    //********************************************************************
+
+    List<Answer> queryAnswers(@Param("query") AnswerQuery query);
+    int countAnswers(@Param("query") AnswerQuery query);
+
+    //********************************************************************
 
 }

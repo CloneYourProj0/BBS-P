@@ -1,6 +1,7 @@
 package com.gem.bbs.service;
 
 import com.gem.bbs.entity.Answer;
+import com.gem.bbs.entity.AnswerQuery;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -43,4 +44,12 @@ public interface AnswerService {
     获取用户点赞记录
      */
     public List<Integer> getLikedAnswerIds(int userid);
+
+
+
+    //**********************************************************************************
+    List<Answer> getAnswers(AnswerQuery query);
+    int countAnswers(AnswerQuery query);
+
+    //**********************************************************************************
 }

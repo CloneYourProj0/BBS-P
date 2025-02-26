@@ -62,6 +62,52 @@
         DELETE FROM bbs.answer WHERE id = #{id}
     </delete>
 
+
+
+    <!-- ************************************************************* -->
+
+    <select id="queryAnswers" resultType="com.gem.bbs.entity.Answer">
+        SELECT id, content, question_id, user_id, is_accept, likes, createtime, toanswerid
+        FROM answer
+        <where>
+            <if test="query.userId != null">
+                AND user_id = #{query.userId}
+            </if>
+            <if test="query.questionId != null">
+                AND question_id = #{query.questionId}
+            </if>
+            <if test="query.startTime != null">
+                AND createtime &gt;= #{query.startTime}
+            </if>
+            <if test="query.endTime != null">
+                AND createtime &lt;= #{query.endTime}
+            </if>
+        </where>
+        ORDER BY createtime DESC
+        <if test="query.limit != null">
+            LIMIT #{query.limit} OFFSET #{query.offset}
+        </if>
+    </select>
+    <select id="countAnswers" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM answer
+        <where>
+            <if test="query.userId != null">
+                AND user_id = #{query.userId}
+            </if>
+            <if test="query.questionId != null">
+                AND question_id = #{query.questionId}
+            </if>
+            <if test="query.startTime != null">
+                AND createtime &gt;= #{query.startTime}
+            </if>
+            <if test="query.endTime != null">
+                AND createtime &lt;= #{query.endTime}
+            </if>
+        </where>
+    </select>
+
+
+
 </mapper>
 
 

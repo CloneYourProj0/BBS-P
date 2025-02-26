@@ -2,6 +2,7 @@ package com.gem.bbs.service;
 
 import com.gem.bbs.entity.Answer;
 import com.gem.bbs.entity.Question;
+import com.gem.bbs.entity.QuestionQuery;
 
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
@@ -72,10 +73,17 @@ public interface QuestionService {
     /*
     by gpt o1
      */
-    List<Question> getQuestionsByUserId(Integer userId);
+//    List<Question> getQuestionsByUserId(Integer userId);
     Question getQuestionById(Integer id);
     void updateQuestion(Question question);
     void deleteQuestion(Integer id);
 
+
+    //************************************************************************************************
+
+
+    List<Question> getQuestions(QuestionQuery query);
+    int countQuestions(QuestionQuery query);
+    //********************************************************************************************
     // 其他方法...
 }

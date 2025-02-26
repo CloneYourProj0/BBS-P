@@ -2,6 +2,7 @@ package com.gem.bbs.mapper;
 
 import com.gem.bbs.entity.Answer;
 import com.gem.bbs.entity.Question;
+import com.gem.bbs.entity.QuestionQuery;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -46,7 +47,11 @@ public interface QuestionMapper {
 
     List<Answer> FindAnswerByUserId(int id);
 
-    List<Question> getQuestionsByUserId(Integer userId);
+    List<Question> getQuestionsByUserId(@Param("userId") Integer userId,
+                                        @Param("offset") int offset,
+                                        @Param("pageSize") int pageSize);
+    int getQuestionCountByUserId(@Param("userId") Integer userId);
+
     Question getQuestionById(Integer id);
     void updateQuestion(Question question);
     void deleteQuestion(Integer id);
@@ -71,4 +76,15 @@ public interface QuestionMapper {
     List<Question> countQuestions();
 
     List<Question> matchQuestion(@Param("content")String content);
+
+    //*****************************************************************************
+
+    // 查询符合条件的 Question 列表
+    List<Question> queryQuestions(@Param("query") QuestionQuery query);
+
+    // 查询符合条件的总记录数
+    int countQuestionsbyadmin(@Param("query") QuestionQuery query);
+
+    //*****************************************************************************
+
 }

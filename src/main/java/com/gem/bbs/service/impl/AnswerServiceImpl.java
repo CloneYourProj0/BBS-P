@@ -125,6 +125,23 @@ public class AnswerServiceImpl implements AnswerService {
     public List<Integer> getLikedAnswerIds(int userid){
         List<Integer> listAnswerId=answerMapper.getLikedAnswerIds(userid);
         return listAnswerId;
+    }
+    //********************************************************************
+
+    @Override
+    public List<Answer> getAnswers(AnswerQuery query) {
+        return answerMapper.queryAnswers(query);    }
+
+    @Override
+    public int countAnswers(AnswerQuery query) {
+        return answerMapper.countAnswers(query);
+
     };
+
+    //********************************************************************
+
+
+
+
 
 }

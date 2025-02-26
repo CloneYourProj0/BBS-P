@@ -1,12 +1,32 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="com.gem.bbs.entity.User" %>
+<%@ page import="com.gem.bbs.entity.Question" %>
+<%@ page import="com.gem.bbs.entity.Answer" %>
+<%@ page import="com.gem.bbs.entity.User" %>
+<%@ page import="com.gem.bbs.entity.Question" %>
+<%@ page import="com.gem.bbs.entity.PageResult" %>
+<%@ page import="com.gem.bbs.entity.*" %>
+<%
+    User currentUser = (User) session.getAttribute("user");
+    if (currentUser == null || !"admin".equals(currentUser.getRole())) {
+        response.sendRedirect(request.getContextPath() + "/user/loginPage");
+        return;
+    }
+
+    // 获取用户列表
+//    List<User> userList = (List<User>) request.getAttribute("userList");
+    PageResult pageResult = (PageResult) request.getAttribute("pageResult");
+%>
+
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理员管理页面</title>
-    <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/layui-2.8.0/dist/css/layui.css">
-    <script src="${pageContext.servletContext.contextPath}/assets/layui-2.8.0/dist/layui.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/layui@2.6.8/dist/css/layui.css">
+    <script src="https://cdn.jsdelivr.net/npm/layui@2.6.8/dist/layui.js"></script>
     <style>
         /* 整体布局 */
         .layout-admin {
@@ -70,9 +90,6 @@
             margin-bottom: 24px;
             border-radius: 4px;
             box-shadow: 0 1px 4px rgba(0,21,41,.08);
-            display: flex;
-            align-items: center;
-            justify-content: space-between
         }
 
         .admin-header h2 {
@@ -198,7 +215,7 @@
                 </a>
             </li>
             <li class="layui-nav-item">
-                <a href="<%= request.getContextPath() %>/admin/viewAnswers">
+                <a href="<%= request.getContextPath() %>/admin/viewUserAnswers">
                     <i class="layui-icon layui-icon-dialogue"></i> 回复管理
                 </a>
             </li>
@@ -210,7 +227,6 @@
         <!-- 页面标题 -->
         <div class="admin-header">
             <h2>用户管理</h2>
-            <h4><a href="<%= request.getContextPath() %>/index" class="return-btn">返回</a></h4>
         </div>
 
         <!-- 搜索框 -->
@@ -266,32 +282,6 @@
 
                 });
 
-
-                // 添加搜索按钮点击事件
-                document.getElementById('searchBtn').addEventListener('click', function() {
-                    var keyword = document.getElementById('searchUser').value;
-                    // 对关键词进行编码
-                    var encodedKeyword = encodeURIComponent(keyword);
-                    // 重新加载表格，传入搜索关键词
-                    table.reload('userTable', {
-                        url: '${pageContext.request.contextPath}/admin/users',
-                        where: {
-                            keyword: encodedKeyword
-                        },
-                        page: {
-                            curr: 1 // 重新从第一页开始
-                        }
-                    });
-                });
-
-                // 也可以添加回车键搜索功能
-                document.getElementById('searchUser').addEventListener('keypress', function(e) {
-                    if(e.keyCode === 13) { // 回车键
-                        document.getElementById('searchBtn').click();
-                    }
-                });
-
-
                 //监听工具条事件
                 table.on('tool(userTable)', function(obj){
                     var data = obj.data;
@@ -312,7 +302,3 @@
     </div>
 </body>
 </html>
-
-
-
-
