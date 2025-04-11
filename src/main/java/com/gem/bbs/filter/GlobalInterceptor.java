@@ -9,12 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * @Author: jzhang
- * @WX: 15250420158
- * @Date: 2020/1/17 08:42
- * @Description:
- */
+
 public class GlobalInterceptor implements HandlerInterceptor {
     /*
     后加，用于验证是否建立了sse

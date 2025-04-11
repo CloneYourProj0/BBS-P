@@ -20,12 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpSession;
 import java.util.*;
 
-/**
- * @Author: jzhang
- * @WX: 15250420158
- * @Date: 2020/2/13 15:47
- * @Description: 回复控制器
- */
+
 @Controller
 @Slf4j
 @RequestMapping("/ans")

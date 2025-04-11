@@ -4,6 +4,7 @@ import com.gem.bbs.common.MessageManager;
 import com.gem.bbs.entity.Message;
 import com.gem.bbs.entity.User;
 import com.gem.bbs.service.MessageService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -15,6 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/message")
+@Slf4j
 public class MessageController {
 
     @Autowired
@@ -26,14 +28,22 @@ public class MessageController {
     // 建立SSE连接（在用户登录成功后调用）
     @GetMapping("/connect")
     public SseEmitter connect(HttpSession session) {
+        // 获取用户ID
         User user = (User)session.getAttribute("user");
         Integer userId=user.getId();
+
         if (userId == null) {
             throw new RuntimeException("用户未登录");
         }
 
-        SseEmitter emitter = messageManager.createSseEmitter(userId);
-
+        boolean hasConnection = messageManager.hasConnection(userId);
+        SseEmitter emitter ;
+        if (hasConnection) {
+            log.info("用户 {} 已经有SSE连接", userId);
+            emitter = messageManager.getSseEmitter(userId);
+        }else {
+             emitter = messageManager.createSseEmitter(userId);
+        }
         // 获取并发送离线消息
         List<Message> offlineMessages = messageService.getOfflineMessages(userId);
         if (!offlineMessages.isEmpty()) {

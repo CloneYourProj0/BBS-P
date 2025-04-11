@@ -18,12 +18,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * @Author: jzhang
- * @WX: 15250420158
- * @Date: 2020/2/13 10:47
- * @Description:
- */
+
 @Service
 @Slf4j
 public class QuestionServiceImpl implements QuestionService {
@@ -46,7 +41,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Question selectOne(Integer id) {
+    public QuestionAndUserAvater selectOne(Integer id) {
         return questionMapper.selectOneByPrimaryKey(id);
     }
 
@@ -97,7 +92,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public List<Question> findAll(Integer currentPage, Integer pageCount, String title) {
+    public List<QuestionAndUserAvater> findAll(Integer currentPage, Integer pageCount, String title) {
         return questionMapper.selectAll((currentPage - 1) * pageCount,pageCount,title);
     }
 
@@ -169,5 +164,10 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     //*****************************************************************************
+
+    @Override
+    public void incrementViewCount(Integer questionId) {
+        questionMapper.incrementViewCount(questionId);
+    }
 
 }

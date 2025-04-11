@@ -20,10 +20,6 @@
 			</div>
 			<div class="nav-user">
 				<!--
-					作者：634072111@qq.com
-					时间：2017-12-28
-					描述：登录后的样子
-
 				<a class="avatar" href="">
 					<img src="res/images/avatar/11.jpg">
 					<cite>贤心</cite>
@@ -34,11 +30,7 @@
 				 -->
 
 
-				<!--
-					作者：634072111@qq.com
-					时间：2017-12-28
-					描述：未登录的样子
-				-->
+
 				<a   class="iconfont icon-touxiang layui-hide-xs" style="margin-top: 4px; display: inline-block;">
 				</a>
 				<div class="nav"  style="font-size:14px;color: white;margin-top: -5px;margin-left: 1px; "  />
@@ -206,6 +198,16 @@
 				</c:if>
 			});
 
+			// 页面刷新时关闭SSE连接
+			window.onbeforeunload = function() {
+				if (eventSource) {
+					eventSource.close();
+					eventSource = null;
+					console.log('SSE连接已关闭!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+					sessionStorage.removeItem('sseConnected');
+				}
+			};
+
 			// 暴露给全局的方法，以便其他页面可以调用
 			window.SSEManager = {
 				connect: connectSSE,
@@ -219,6 +221,7 @@
 		})();
 	</script>
 	<script>
+		// 退出处理逻辑
 		function handleLogout() {
 			// 先断开SSE连接
 			if (window.SSEManager) {

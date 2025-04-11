@@ -5,7 +5,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource("classpath:model.properties")  // 加载额外的 properties 文件
+@PropertySource(value = {"classpath:model.properties",
+        "classpath:img.properties"},encoding = "UTF-8"
+)  // 加载额外的 properties 文件
 public class ApiConfig {
 
     @Value("${api.url}")

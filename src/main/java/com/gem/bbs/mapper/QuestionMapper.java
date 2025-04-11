@@ -2,17 +2,13 @@ package com.gem.bbs.mapper;
 
 import com.gem.bbs.entity.Answer;
 import com.gem.bbs.entity.Question;
+import com.gem.bbs.entity.QuestionAndUserAvater;
 import com.gem.bbs.entity.QuestionQuery;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-/**
- * @Author: jzhang
- * @WX: 15250420158
- * @Date: 2020/2/13 10:42
- * @Description: 问题接口
- */
+
 public interface QuestionMapper {
     /**
      * 保存问题
@@ -23,7 +19,7 @@ public interface QuestionMapper {
     /**
      * 查询所有问题
      */
-    List<Question> selectAll(@Param("beginPage") Integer beginPage, @Param("pageCount") Integer pageCount, @Param("title") String title);
+    List<QuestionAndUserAvater> selectAll(@Param("beginPage") Integer beginPage, @Param("pageCount") Integer pageCount, @Param("title") String title);
 
     /**
      * 查询记录总数
@@ -33,7 +29,7 @@ public interface QuestionMapper {
     /**
      * 根据主键查询问题
      */
-    Question selectOneByPrimaryKey(Integer id);
+    QuestionAndUserAvater selectOneByPrimaryKey(Integer id);
 
     /**
      * 更新帖子置顶状态
@@ -86,5 +82,10 @@ public interface QuestionMapper {
     int countQuestionsbyadmin(@Param("query") QuestionQuery query);
 
     //*****************************************************************************
+
+    /**
+     * 增加问题的阅读次数
+     */
+    void incrementViewCount(Integer questionId);
 
 }

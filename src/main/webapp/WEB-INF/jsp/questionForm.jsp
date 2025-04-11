@@ -55,6 +55,26 @@
               border-radius: 4px;
               margin-top: 20px;
           }
+          
+          /* 图片上传预览样式 */
+          .upload-img-box {
+              margin-top: 10px;
+              margin-bottom: 10px;
+          }
+          
+          .upload-img-box img {
+              max-width: 200px;
+              max-height: 200px;
+              margin-right: 10px;
+              margin-bottom: 10px;
+              border: 1px solid #ddd;
+              padding: 2px;
+          }
+          
+          .upload-img-preview {
+              display: flex;
+              flex-wrap: wrap;
+          }
       </style>
   </head>
   <body>
@@ -90,6 +110,25 @@
                   </div>
                   <%--                     <textarea id="getaibot" placeholder="输入 @ 来提及用户..."></textarea>--%>
               </div>
+
+            <div class="layui-form-item">
+              <label class="layui-form-label">上传图片</label>
+              <div class="layui-input-inline" style="width: auto;">
+                <button type="button" class="layui-btn" id="uploadImage">
+                  <i class="layui-icon layui-icon-upload"></i> 选择图片
+                </button>
+              </div>
+              <div class="layui-form-mid layui-word-aux">支持图上传，可在编辑器中插入</div>
+            </div>
+
+            <div class="layui-form-item">
+              <div class="layui-input-block" style="margin-left: 0;">
+                <div class="layui-upload-list">
+                  <div id="uploadImagePreview" class="upload-img-preview"></div>
+                </div>
+                <input type="hidden" name="uploadedImages" id="uploadedImages">
+              </div>
+            </div>
 
             <div class="layui-form-item layui-form-text">
               <div class="layui-input-block">
@@ -173,6 +212,10 @@
         KE.show({
             id : 'content',
             resizeMode : 1,
+            allowFileManager : true,  // 允许浏览服务器文件
+            allowPreviewEmoticons : true, // 允许预览表情
+            allowUpload : true,  // 允许上传文件
+            syncType : 'auto',  // 自动同步数据
             //cssPath : './index.css',
             items : [
             'fontname', 'fontsize', 'textcolor', 'bgcolor', 'bold', 'italic', 'underline',
@@ -183,6 +226,103 @@
         layui.use(['form'], function(){
           var form = layui.form;
           form.render(); // 更新全部
+        });
+      </script>
+      
+      <script>
+        layui.use(['upload', 'layer'], function(){
+          var upload = layui.upload;
+          var layer = layui.layer;
+          var $ = layui.jquery;
+          
+          // 存储上传的图片路径
+          var uploadedImages = [];
+          
+          // 图片上传
+          upload.render({
+            elem: '#uploadImage',
+            url: '${pageContext.servletContext.contextPath}/upload/image', // 图片上传接口，需要后端实现
+            multiple: true, // 支持多图上传
+            accept: 'images', // 只接受图片
+            acceptMime: 'image/*', // 只接受图片类型
+            before: function(obj){
+              // 上传前的回调
+              layer.load(); // 加载层
+            },
+            done: function(res){
+              layer.closeAll('loading'); // 关闭加载层
+              if(res.code == 0){ // 上传成功
+                console.log(res);
+                
+                // 构建完整的图片URL（包含域名和端口）
+                var baseUrl = window.location.protocol + '//' + window.location.host;
+                var fullImageUrl = res.data.src;
+                console.log(fullImageUrl);
+                // 如果图片URL不是以http或https开头，添加baseUrl
+                if(!fullImageUrl.startsWith('http://') && !fullImageUrl.startsWith('https://')) {
+                  fullImageUrl = baseUrl + (fullImageUrl.startsWith('/') ? '' : '/') + fullImageUrl;
+                }
+                console.log(fullImageUrl);
+                // 添加图片预览和复制路径功能
+                $('#uploadImagePreview').append('<div class="upload-img-box">' +
+                  '<img src="' + fullImageUrl + '" alt="' + (res.data.title || '上传图片') + '" class="layui-upload-img">' +
+                  '<div class="layui-form-item" style="margin-top: 5px;">' +
+                  '<div class="layui-input-inline" style="width: 200px;">' +
+                  '<input type="text" class="layui-input image-url" value="' + fullImageUrl + '" readonly>' +
+                  '</div>' +
+                  '<button type="button" class="layui-btn layui-btn-xs layui-btn-normal copy-url">复制</button>' +
+                  '<button type="button" class="layui-btn layui-btn-xs layui-btn-danger delete-img" data-index="' + uploadedImages.length + '">删除</button>' +
+                  '</div>' +
+                  '</div>');
+                
+                // 保存图片路径（这里也可以选择保存完整路径或相对路径，取决于您的需求）
+                uploadedImages.push(fullImageUrl);
+                $('#uploadedImages').val(JSON.stringify(uploadedImages));
+                
+                // 图片插入提示
+                layer.msg('上传成功，请复制图片地址后插入编辑器');
+              } else {
+                layer.msg('上传失败：' + res.msg);
+              }
+            },
+            error: function(){
+              layer.closeAll('loading');
+              layer.msg('上传出错，请检查网络');
+            }
+          });
+          
+          // 复制图片URL
+          $(document).on('click', '.copy-url', function(){
+            var $input = $(this).parent().find('.image-url');
+            $input.select();
+            try {
+              var successful = document.execCommand('copy');
+              if(successful) {
+                // layer.msg('已复制图片地址，可在编辑器中使用 <img src="' + $input.val() + '"> 标签插入图片');
+                // layer.msg('已复制图片地址，可在编辑器中使用 &lt;img src="' + $input.val() + '"&gt; 标签插入图片');
+                layer.msg('已复制图片地址，可在编辑器中使用');
+              } else {
+                layer.msg('复制失败，请手动复制');
+              }
+            } catch (err) {
+              layer.msg('复制失败: ' + err);
+            }
+          });
+          
+          // 删除上传的图片
+          $(document).on('click', '.delete-img', function(){
+            var index = $(this).data('index');
+            uploadedImages.splice(index, 1);
+            $('#uploadedImages').val(JSON.stringify(uploadedImages));
+            $(this).closest('.upload-img-box').remove();
+            
+            // 重新计算索引
+            $('.delete-img').each(function(i){
+              $(this).data('index', i);
+            });
+            
+            layer.msg('已删除');
+          });
         });
       </script>
   </body>

@@ -6,12 +6,7 @@ import com.gem.bbs.entity.User;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
-/**
- * @Author: jzhang
- * @WX: 15250420158
- * @Date: 2020/2/13 08:48
- * @Description:
- */
+
 public interface UserService {
     /**
      * 注册用户
@@ -45,5 +40,7 @@ public interface UserService {
     PageResult<User> getUsersByPage(int page, int pageSize);
 
     PageResult<User> searchUsersByKeyword(int page, int limit, String keyword);
+
+    boolean updateAvatar(Integer userId, String avatarUrl);
     // 其他方法...
 }

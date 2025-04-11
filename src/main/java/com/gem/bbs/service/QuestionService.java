@@ -2,18 +2,14 @@ package com.gem.bbs.service;
 
 import com.gem.bbs.entity.Answer;
 import com.gem.bbs.entity.Question;
+import com.gem.bbs.entity.QuestionAndUserAvater;
 import com.gem.bbs.entity.QuestionQuery;
 
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * @Author: jzhang
- * @WX: 15250420158
- * @Date: 2020/2/13 10:46
- * @Description:
- */
+
 public interface QuestionService {
 
     /*
@@ -23,7 +19,7 @@ public interface QuestionService {
     /**
      * 根据主键查询问题
      */
-    Question selectOne(Integer id);
+    QuestionAndUserAvater selectOne(Integer id);
 
     /*
     获取一周内阅读量最多的问题
@@ -44,7 +40,7 @@ public interface QuestionService {
     /**
      * 获取记录数
      */
-    List<Question> findAll(Integer currentPage, Integer pageCount,String title);
+    List<QuestionAndUserAvater> findAll(Integer currentPage, Integer pageCount, String title);
 
     /**
      * 更新帖子置顶状态
@@ -86,4 +82,9 @@ public interface QuestionService {
     int countQuestions(QuestionQuery query);
     //********************************************************************************************
     // 其他方法...
+
+    /**
+     * 增加问题的阅读次数
+     */
+    void incrementViewCount(Integer questionId);
 }

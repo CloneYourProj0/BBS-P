@@ -53,8 +53,8 @@ public class testController {
         // 计算总记录数
         int total = messageService.countByToUserId(userId);
 
-        // 计算总页数
-        int totalPage = (total + pageSize - 1) / pageSize;
+        // 计算总页数，考虑边界情况：当总记录数为0时，totalPage应为1
+        int totalPage = total == 0 ? 1 : (total + pageSize - 1) / pageSize;
 
         // 校验当前页码
         if (pageNum < 1) {

@@ -32,7 +32,7 @@ public class AdminController {
     @Autowired
     private AnswerService answerService;
 
-    // 显示管理员首页*********************************************************************************************
+
     @GetMapping("/dashboard")
     public String adminDashboard(Model model,
                                  HttpSession session,
@@ -179,7 +179,7 @@ public class AdminController {
 
         return new PageResult<>(list,page,limit,total,totalPages);
     }
-//*******************************************************************************************************************
+
     // 编辑用户
     @GetMapping("/editUser")
     public String editUser(@RequestParam("id") Integer id, Model model) {
@@ -203,10 +203,7 @@ public class AdminController {
     }
 
 
-//*******************************************************************************************************************
-    // 查看用户的回复
 
-//***********************************************************************************************************************
     // 编辑帖子
     @GetMapping("/editQuestion")
     public String editQuestion(@RequestParam("id") Integer id, Model model) {
@@ -216,9 +213,17 @@ public class AdminController {
     }
 
     @PostMapping("/updateQuestion")
-    public String updateQuestion(Question question) {
-        questionService.updateQuestion(question);
-        return "redirect:/admin/dashboard";
+    @ResponseBody
+    public Map<String, Object> updateQuestion(Question question) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            questionService.updateQuestion(question);
+            result.put("success", true);
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
     }
 
     // 删除帖子

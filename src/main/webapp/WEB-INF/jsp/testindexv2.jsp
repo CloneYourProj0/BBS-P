@@ -7,6 +7,7 @@
 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -230,7 +231,15 @@
                     <c:forEach items="${questionList}" var="question">
                         <li class="fly-list-li">
                             <a href="javascript:;" class="fly-list-avatar">
-                                <img src="${pageContext.servletContext.contextPath}/img/uer.jpg" alt="">
+                                <c:choose>
+                                    <c:when test="${not empty question.avatar}">
+                                        <!-- 直接使用头像路径，假设路径已经是完整路径 -->
+                                        <img src="${question.avatar}" alt="用户头像">
+                                    </c:when>
+                                    <c:otherwise>
+                                        <img src="${pageContext.servletContext.contextPath}/img/uer.jpg" alt="默认头像">
+                                    </c:otherwise>
+                                </c:choose>
                             </a>
                             <h2 class="fly-tip">
                                 <a href="${pageContext.servletContext.contextPath}/ques/detail?id=${question.id}">${question.title}</a>
@@ -239,10 +248,10 @@
                                 </c:if>
                             </h2>
                             <p>
-                                <span><a href="">贤心</a></span>
+                                <span><a href="">${question.username != null ? question.username : '贤心'}</a></span>
                                 <span>刚刚</span>
                                 <span class="fly-list-hint">
-                                          <i class="iconfont" title="回答">&#xe60c;</i> 317
+                                          <i class="iconfont" title="浏览">&#xe60c;</i> ${question.viewCount}
                                         </span>
                             </p>
                         </li>
@@ -261,7 +270,7 @@
             <%--                            </c:if>--%>
             <%--                            <a href="${pageContext.servletContext.contextPath}/index?page=1" class="laypage-last" title="首页">首页</a>--%>
             <%--                            <c:forEach begin="1" end="${totalPage}" var="page">--%>
-            <%--                                <a class="${currentPage eq page ? 'laypage-curr' : ''}" href="${pageContext.servletContext.contextPath}/index?page=${page}">${page}</a>--%>
+            <%--                                <a class="${currentPage eq page ? 'laypage-curr' : ''}" href="${pageContext.servletContext.contextPath}/index?page=${page}">${page}</a>
             <%--                            </c:forEach>--%>
             <%--                            &lt;%&ndash;<span>…</span>&ndash;%&gt;--%>
             <%--                            <a href="${pageContext.servletContext.contextPath}/index?page=${totalPage}" class="laypage-last" title="尾页">尾页</a>--%>
@@ -394,7 +403,7 @@
                             <div class="question-item">
                                 <div>
                                     <span class="hot-tag">热</span>
-                                    <a href="#">${rec.description}</a>
+                                    <a href="#">${rec.title}</a>
                                     <span class="count">阅读 ${rec.viewCount}</span>
                                 </div>
                             </div>

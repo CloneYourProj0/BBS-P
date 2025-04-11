@@ -3,15 +3,10 @@ package com.gem.bbs.mapper;
 import com.gem.bbs.entity.User;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
-/**
- * @Author: jzhang
- * @WX: 15250420158
- * @Date: 2020/2/13 08:39
- * @Description: 用户接口
- */
 public interface UserMapper {
     //注册，即保存用户
     void insertUser(User user);
@@ -58,4 +53,8 @@ public interface UserMapper {
     List<User> getUsersByKeyword(@Param("keyword") String keyword,
                                  @Param("offset") int offset,
                                  @Param("pageSize") int pageSize);
+
+    @Update("UPDATE user SET avatar = #{avatarUrl} WHERE id = #{userId}")
+    int updateAvatar(@Param("userId") Integer userId, @Param("avatarUrl") String avatarUrl);
+
 }

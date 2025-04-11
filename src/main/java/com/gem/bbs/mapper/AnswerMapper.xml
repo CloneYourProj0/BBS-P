@@ -10,12 +10,13 @@
     <select id="selectListByAnswerId" parameterType="java.lang.Integer" resultType="map" >
         SELECT
             answer.*,
+            user.avatar,
             COALESCE(user.loginname, botanduser.name) AS loginname
         FROM
             bbs.answer
                 LEFT JOIN
             bbs.user ON answer.user_id = user.id
-                JOIN
+                LEFT JOIN
             bbs.botanduser ON answer.user_id = botanduser.bot_id
         WHERE
             answer.question_id =#{id}

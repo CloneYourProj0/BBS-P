@@ -23,16 +23,21 @@
         WHERE id = #{id};
     </update>
 
+ <!--  *********************************修改V3，让返回信息携带上头像******************************************************   -->
     <!--查询集合-->
-    <select id="selectAll" resultType="Question">
-        select * from question
+    <select id="selectAll" resultType="questionanduseravater">
+        SELECT q.*,
+        u.avatar,
+        u.username
+        FROM question q
+        LEFT JOIN user u ON q.user_id = u.id
         <where>
             <include refid="query_question_clause"></include>
         </where>
-        ORDER BY is_up DESC, createtime DESC
-        limit #{beginPage},#{pageCount}
+        ORDER BY q.is_up DESC, q.createtime DESC
+        LIMIT #{beginPage}, #{pageCount}
     </select>
-
+    <!--    ***************************************************************************************   -->
     <!-- 查询记录总数 -->
     <select id="getTotal" parameterType="string" resultType="java.lang.Integer">
         select count(1) from question
@@ -41,10 +46,17 @@
         </where>
     </select>
 
+    <!-- ****************************让获取的问题内容的时候也可带上相应的提问人信息*************************************  -->
     <!-- 根据主键查询 -->
-    <select id="selectOneByPrimaryKey" parameterType="java.lang.Integer" resultType="Question">
-        select * from question where id = #{value}
+    <select id="selectOneByPrimaryKey" parameterType="java.lang.Integer" resultType="questionAndUserAvater">
+        select q.* ,
+               u.avatar,
+               u.username
+        from question q
+                 left join user u on q.user_id = u.id
+        where q.id = #{id}
     </select>
+    <!-- *****************************************************************  -->
 
     <!--查找用户的帖子 -->
    <select id="FindQuestionByUserId" resultType="com.gem.bbs.entity.Question">
@@ -185,8 +197,12 @@
         </where>
     </select>
 
-
-
+    <!-- 增加问题阅读次数 -->
+    <update id="incrementViewCount" parameterType="java.lang.Integer">
+        UPDATE question 
+        SET view_count = view_count + 1 
+        WHERE id = #{questionId}
+    </update>
 
 </mapper>
 

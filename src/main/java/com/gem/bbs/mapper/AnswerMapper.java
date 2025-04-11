@@ -11,12 +11,7 @@ import org.apache.ibatis.annotations.Update;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @Author: jzhang
- * @WX: 15250420158
- * @Date: 2020/2/13 15:25
- * @Description: 回复接口
- */
+
 public interface AnswerMapper {
     /**
      * 根据问题主键获取回复记录

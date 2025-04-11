@@ -11,12 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
 
-/**
- * @Author: jzhang
- * @WX: 15250420158
- * @Date: 2020/2/13 08:56
- * @Description: 用户控制器
- */
+
 @Controller
 @RequestMapping("/user")
 public class UserController {

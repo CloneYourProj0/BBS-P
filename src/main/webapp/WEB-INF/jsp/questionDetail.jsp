@@ -140,26 +140,28 @@
 						<h1>${question.title}</h1>
 						<div class="fly-tip fly-detail-hint" data-id="">
 							<c:if test="${status!=0}">
-								rytafsdjahsdj
 								<span class="fly-tip-stick">${status}</span>
 							</c:if>
 							<span class="jie-admin">
 							<a href="">点击置顶</a>
 						</span>
-							<span
-								class="layui-btn layui-btn-mini jie-admin">
+							<span class="layui-btn layui-btn-mini jie-admin">
 								<a href="${contextPath}/ques/top?id=${question.id}&status=0">取消置顶</a>
 							</span>
 							<span class="jie-admin" type="del" style="margin-left: 20px;">
 								<a>删除该帖</a> </span>
 							</span>
 							<div class="fly-list-hint">
-								<i class="iconfont" title="回答">&#xe60c;</i> 2
+								<i class="iconfont" title="回答">&#xe60c;</i> ${question.viewCount}
 							</div>
 						</div>
 						<div class="detail-about">
-							<a class="jie-user" href=""> <img src="${contextPath}/img/uer.jpg" alt="头像"> <cite> 压缩
-									<em><fmt:formatDate value="${question.createtime}" pattern="yyyy-MM-dd" />发布</em> </cite> </a>
+							<a class="jie-user" href=""> 
+								<img src="${question.avatar != null ? question.avatar : contextPath.concat('/img/uer.jpg')}" alt="头像">
+								 <cite> ${question.username != null ? question.username : '匿名'}
+									<em><fmt:formatDate value="${question.createtime}" pattern="yyyy-MM-dd" />发布</em> 
+								</cite> 
+								</a>
 							<div class="detail-hits" data-id="{{rows.id}}">
 								<span class="layui-btn layui-btn-mini jie-admin">
 									<a href="#">已完帖，无法编辑</a>
@@ -173,7 +175,7 @@
 							</div>
 						</div>
 						<div class="detail-body photos" style="margin-bottom: 20px;">
-							<p>${question.description}</p>
+							${question.description}
 						</div>
 					</div>
 
@@ -199,8 +201,8 @@
 										<li id="answer-${answer.id}" data-id="${answer.id}" class="jieda-daan">
 											<div class="detail-about detail-about-reply">
 												<a class="jie-user" href="javascript:;">
-													<img src="${contextPath}/img/uer.jpg" alt="">
-													<cite><i>${answer.loginname}</i></cite>
+													<img src="${answer.avatar != null ? answer.avatar : contextPath.concat('/img/uer.jpg')}" alt="">
+													<cite><i>${answer.loginname != null ? answer.loginname : "匿名"}</i></cite>
 												</a>
 												<div class="detail-hits">
 													<span>${answer.createtime}</span>
@@ -208,7 +210,7 @@
 													<c:if test="${answer.toanswerid != null && answer.toanswerid !=0}">
 														<a href="${contextPath}/ques/detail?id=${answer.question_id}#answer-${answer.toanswerid}"
 														   class="detail-jump"
-														   onclick="return scrollToAnswer(${answer.toanswerid})">
+														   onclick="return scrollToAnswer(getAnswerId('${answer.id}'))">
 															<i class="iconfont icon-reply"></i>
 															<span>回复于#${answer.toanswerid}</span>
 														</a>
@@ -302,7 +304,8 @@
 <%--							<!-- <li class="fly-none">没有任何回答</li> -->--%>
 <%--						</ul>--%>
 
-						<span id="toName">@ 压缩(楼主)</span>
+						<hr>
+						<span id="toName">@ (楼主)</span>
 						<hr>
 						<div class="layui-form layui-form-pane">
 							<form action="${contextPath}/ans/save" method="post">
@@ -648,5 +651,48 @@
 			});
 		});
 	</script>
+<%-- 添加图片链接处理脚本 --%>
+<script>
+    $(document).ready(function() {
+        // 处理问题描述中的图片链接
+        processImageLinks($('.detail-body.photos').first());
+        
+        // 处理所有回答中的图片链接
+        $('.detail-body.jieda-body').each(function() {
+            processImageLinks($(this));
+        });
+        
+        // 将文本中的图片链接转换为图片
+        function processImageLinks(container) {
+            // 获取容器中的HTML内容
+            var content = container.html();
+            if (!content) return;
+            
+            // 查找可能的图片URL模式
+            var imgRegex = /(https?:\/\/[^\s]+?\.(jpg|jpeg|png|gif|bmp|webp))/gi;
+            
+            // 替换为img标签
+            content = content.replace(imgRegex, function(match) {
+                return '<img src="' + match + '" style="max-width:100%;" />';
+            });
+            
+            // 更新容器内容
+            container.html(content);
+        }
+    });
+</script>
+
+<script>
+// 在页面加载时定义所有需要用到的answer ID
+var answerIds = {};
+<c:forEach items="${answerList}" var="answer">
+    answerIds['${answer.id}'] = ${answer.toanswerid};
+</c:forEach>
+
+function getAnswerId(id) {
+    return answerIds[id] || 0;
+}
+</script>
+
 	</body>
 </html>

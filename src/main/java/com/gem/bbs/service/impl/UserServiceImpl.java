@@ -11,12 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
-/**
- * @Author: jzhang
- * @WX: 15250420158
- * @Date: 2020/2/13 08:52
- * @Description:
- */
+
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
@@ -117,6 +112,11 @@ public class UserServiceImpl implements UserService {
         int totalPages = (total + pageSize - 1) / pageSize;
 
         return new PageResult<>(users, page, pageSize, total, totalPages);
+    }
+
+    @Override
+    public boolean updateAvatar(Integer userId, String avatarUrl) {
+        return userMapper.updateAvatar(userId, avatarUrl) > 0;
     }
 
 }

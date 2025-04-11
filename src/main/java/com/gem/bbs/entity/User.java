@@ -5,12 +5,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
-/**
- * @Author: jzhang
- * @WX: 15250420158
- * @Date: 2020/2/12 14:38
- * @Description: user实体类
- */
+
 @Data
 public class User {
     private Integer id;

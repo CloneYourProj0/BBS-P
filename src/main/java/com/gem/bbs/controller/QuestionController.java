@@ -1,6 +1,7 @@
 package com.gem.bbs.controller;
 
 import com.gem.bbs.common.userInteraction;
+import com.gem.bbs.entity.QuestionAndUserAvater;
 import com.gem.bbs.entity.qaUserInteraction;
 import com.gem.bbs.entity.Question;
 import com.gem.bbs.entity.User;
@@ -21,12 +22,7 @@ import java.net.URLDecoder;
 import java.util.*;
 import java.util.stream.Stream;
 
-/**
- * @Author: jzhang
- * @WX: 15250420158
- * @Date: 2020/2/13 10:48
- * @Description: 问题控制器
- */
+
 @Controller
 @RequestMapping("/ques")
 @Slf4j
@@ -73,14 +69,17 @@ public class QuestionController {
      * 获取问题详情内容
      */
     @RequestMapping("/detail")
-    public String detail(Integer id, Model model,HttpSession session) {
-        System.out.println("nihao");
-        Question question = questionService.selectOne(id);
-        //获取该问题的回复
+    public String detail(Integer id, Model model, HttpSession session) {
+        // 增加问题的阅读次数
+        questionService.incrementViewCount(id);
+        
+        // 获取问题详情
+        QuestionAndUserAvater question = questionService.selectOne(id);
+        // 获取该问题的回复
         List<Map<String, Object>> answerList = answerService.selectListByAnswerId(id);
 
-        model.addAttribute("question",question);
-        model.addAttribute("answerList",answerList);
+        model.addAttribute("question", question);
+        model.addAttribute("answerList", answerList);
         User user = (User) session.getAttribute("user");
         if (user != null) {
             log.info("记录用户信息");
@@ -113,9 +112,9 @@ public class QuestionController {
         // 根据 status 参数判断是置顶还是取消置顶
                 String message;
                 questionService.updateTopStatus(id,status);
-                Question question = questionService.selectOne(id);
+                QuestionAndUserAvater question = questionService.selectOne(id);
                 //获取该问题的回复
-        List<Map<String, Object>> answerList = answerService.selectListByAnswerId(id);
+                List<Map<String, Object>> answerList = answerService.selectListByAnswerId(id);
 
                 model.addAttribute("question",question);
                 model.addAttribute("answerList",answerList);

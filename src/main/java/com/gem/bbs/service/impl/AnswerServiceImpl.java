@@ -15,12 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @Author: jzhang
- * @WX: 15250420158
- * @Date: 2020/2/13 15:29
- * @Description:
- */
+
 @Service
 @Slf4j
 public class AnswerServiceImpl implements AnswerService {
@@ -36,9 +31,11 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public List<Map<String, Object>> selectListByAnswerId(Integer id) {
-        return answerMapper.selectListByAnswerId(id);
-    }
 
+        List<Map<String, Object>> mapList = answerMapper.selectListByAnswerId(id);
+        log.info("查询到的回答列表为：{}", mapList);
+        return mapList;
+    }
     @Override
     public void save(Answer answer,HttpSession session) {
         answer.setCreatetime(new Date());

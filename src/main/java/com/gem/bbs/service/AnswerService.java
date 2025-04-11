@@ -7,12 +7,7 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @Author: jzhang
- * @WX: 15250420158
- * @Date: 2020/2/13 15:28
- * @Description: 回复服务层接口
- */
+
 public interface AnswerService {
     /**
      * 根据问题id查询回复列表

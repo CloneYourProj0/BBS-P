@@ -10,7 +10,7 @@
   <title>编辑帖子</title>
   <!-- 引入 layui.css -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/layui/css/layui.css">
+  <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/assets/layui-2.8.0/src/css/layui.css">
   <link rel="stylesheet" href="${pageContext.servletContext.contextPath}/css/global.css">
   <style>
     body {
@@ -103,9 +103,9 @@
     <div class="layui-form-item">
       <label class="layui-form-label">是否置顶</label>
       <div class="layui-input-block">
-        <!-- 隐藏字段确保在复选框未选中时提交 "0" -->
-        <input type="hidden" name="isUp" value="0"/>
-        <input type="checkbox" name="isUp" value="1" <%= (question.getIsUp() != null && question.getIsUp().equals("1")) ? "checked" : "" %> title="置顶">
+        <input type="radio" name="isUp" lay-filter="isUpCheckbox" value="1" <%= (question.getIsUp() != null && question.getIsUp().equals("1")) ? "checked" : "" %> title="置顶">
+        <input type="radio" name="isUp" lay-filter="noUpCheckbox" value="0" <%= (question.getIsUp() != null && question.getIsUp().equals("0")) ? "checked" : "" %> title="取消置顶">
+<%--        <input type="hidden" id="isUpHidden" name="isUp" value="<%= (question.getIsUp() != null && question.getIsUp().equals("1")) ? "1" : "0" %>"/>--%>
       </div>
     </div>
 
@@ -127,7 +127,7 @@
 </div>
 
 <!-- 引入 layui.js -->
-<script src="${pageContext.servletContext.contextPath}/assets/layui/layui.js"></script>
+<script src="${pageContext.servletContext.contextPath}/assets/layui-2.8.0/src/layui.js"></script>
 <script>
   layui.use(['form', 'layer'], function(){
     var form = layui.form;
@@ -147,6 +147,9 @@
       },
       number: [/^\d+$/, '请输入有效的数字']
     });
+    form.on('radio', function(data){
+      console.log(data);
+    });
 
     // 监听提交事件
     form.on('submit(editQuestion)', function(data){
@@ -162,10 +165,11 @@
           if(response.success) {
             layer.msg('更新成功', {icon: 1, time: 2000}, function(){
               // 刷新页面或跳转到其他页面
-              window.location.href = '<%= request.getContextPath() %>/admin/questionList';
+              window.location.href = '<%= request.getContextPath() %>/admin/viewUserPosts';
             });
           } else {
-            layer.msg('更新失败: ' + response.message, {icon: 2});
+            // 显示后端返回的错误信息
+            layer.msg('更新失败: ' + (response.message || '未知错误'), {icon: 2});
           }
         },
         error: function() {
@@ -175,10 +179,11 @@
 
       return false; // 阻止表单跳转
     });
-  });
+
   // 返回按钮点击事件
   document.getElementById('backButton').addEventListener('click', function(){
     window.history.back();
+  });
   });
 
 </script>
